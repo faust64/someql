@@ -1,0 +1,20 @@
+{
+  "name": "someql",
+  "license": "BSD-3-Clause",
+  "version": "0.0.1",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "wraplog": "^0.0.1"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^4.0.3",
+    "cassandra-driver": "^3.2.2",
+    "mysql": "^2.15.0",
+    "pg": "^7.4.0"
+   },
+   "description": "SQL-lookalike abstraction library",
+   "engines": {
+     "node": "6.9.1"
+   },
+  "repository": "https://github.com/faust64/someql"
+}

@@ -1,5 +1,7 @@
 machine:
   environment:
+    CASSANDRA_HOST: 127.0.0.1
+    CASSANDRA_KEYSPACE: tests
     CQLSH_VERSION: 3.4.0
     DEBUG: wraplog
     MYSQL_HOST: localhost

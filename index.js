@@ -15,8 +15,10 @@ module.exports = (opts) => {
 	    return sqlite(opts);
 	} else if (driver === 'cassandra') {
 	    if (opts.host === undefined) { opts.host = process.env.CASSANDRA_HOST || [ '127.0.0.1' ]; }
-	    if (typeof opts.host === 'string') { opts.host = opts.host.split(','); }
-	    if (opts.database === undefined) { opts.database = process.env.CASSANDRA_KEYSPACE || 'sessions'; }
+	    if (typeof opts.host === 'string') { opts.contactPoints = opts.host.split(','); }
+	    else { opts.contactPoints = opts.host; }
+	    if (opts.database === undefined) { opts.keyspace = process.env.CASSANDRA_KEYSPACE || 'sessions'; }
+	    else if (opts.keyspace === undefined) { opts.keyspace = opts.database; }
 	    if (opts.readConsistency === undefined) { opts.readConsistency = process.env.CASSANDRA_READ_CONSISTENCY || 'one'; }
 	    if (opts.writeConsistency === undefined) { opts.writeConsistency = process.env.CASSANDRA_WRITE_CONSISTENCY || 'one'; }
 	    if (opts.username === undefined && process.env.CASSANDRA_USER !== undefined) { opts.username = process.env.CASSANDRA_USER; }

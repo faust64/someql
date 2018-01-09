@@ -1,6 +1,6 @@
 machine:
   environment:
-    MYSQL_HOST: 127.0.0.1
+    MYSQL_HOST: localhost
     MYSQL_DATABASE: circleci
     MYSQL_PASSWORD: test
     MYSQL_USER: ubuntu

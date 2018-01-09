@@ -128,6 +128,9 @@ prep-test-cassandra:
 
 prep-test: prep-test-mysql prep-test-postgres prep-test-sqlite
 
+release:
+	@@npm run release
+
 unit-test:
 	for _t in tests/*.js; \
 	    do \

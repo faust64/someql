@@ -129,10 +129,10 @@ prep-test-cassandra:
 	fi; \
 	test -z "$$CASSANDRA_HOST" && export CASSANDRA_HOST=127.0.0.1; \
 	test -z "$$CASSANDRA_KEYSPACE" && export CASSANDRA_KEYSPACE=tests; \
-	export REPLOPTS="{'class': 'SimpleStrategy', 'replication_factor': '2'}  AND durable_writes = true;"; \
+	export REPLOPTS="{'class': 'SimpleStrategy', 'replication_factor': '2'} AND durable_writes = true;"; \
 	for remote in $$CASSANDRA_HOST; \
 	do \
-	    if test "$$CQLSH_VERSION"; then
+	    if test "$$CQLSH_VERSION"; then \
 		if echo "SELECT * FROM system.local" | cqlsh --cqlverson=$$CQLSH_VERSION $$remote >/dev/null 2>&1; then \
 		    export TARGET=$$remote; \
 		    export REPLOPTS="$(echo describe keyspace system_traces | cqlsh --cqlversion=$$CQLSH_VERSION $$remote | grep -i 'with replication' | sed 's|^.*[Rr][Ee][Pp][Ll][Ii][Cc][Aa][Tt][Ii][Oo][Nn][ \t]*=[ \t]*||')"; \

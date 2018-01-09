@@ -1,7 +1,7 @@
 MYSQL_ADMPASS :=
 MYSQL_ADMUSER := root
 MYSQL_DATABASE := circleci
-MYSQL_HOST := 127.0.0.1
+MYSQL_HOST := localhost
 MYSQL_PASSWORD := test
 MYSQL_USER := ubuntu
 POSTGRES_ADMUSER := postgres

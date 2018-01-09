@@ -1,5 +1,6 @@
 machine:
   environment:
+    DEBUG: wraplog
     MYSQL_HOST: localhost
     MYSQL_DATABASE: circleci
     MYSQL_PASSWORD: test

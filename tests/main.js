@@ -56,8 +56,8 @@ describe('test database connector', () => {
 	if (process.env.TEST_CASSANDRA) {
 	    it('cassandra read & write', (done) => {
 		    let db = require('../index.js')({ driver: 'cassandra' });
-		    db.write('CREATE TABLE unittest (id INT, value VARCHAR)')
-			.then(() => db.write('INSERT INTO unittest VALUES (1, "toto")'))
+		    db.write('CREATE TABLE unittest (id INT PRIMARY KEY, value VARCHAR)')
+			.then(() => db.write('INSERT INTO unittest (id, value) VALUES (1, "toto")'))
 			.then(() => db.read('SELECT * FROM unittest'))
 			.then((rslt) => {
 				if (rslt.length !== 1) {

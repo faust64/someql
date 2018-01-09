@@ -133,15 +133,15 @@ prep-test-cassandra:
 	for remote in $$CASSANDRA_HOST; \
 	do \
 	    if test "$$CQLSH_VERSION"; then \
-		if echo "SELECT * FROM system.local" | cqlsh --cqlverson=$$CQLSH_VERSION $$remote >/dev/null 2>&1; then \
+		if echo "SELECT * FROM system.local;" | cqlsh --cqlversion=$$CQLSH_VERSION $$remote >/dev/null 2>&1; then \
 		    export TARGET=$$remote; \
-		    export REPLOPTS="$(echo describe keyspace system_traces | cqlsh --cqlversion=$$CQLSH_VERSION $$remote | grep -i 'with replication' | sed 's|^.*[Rr][Ee][Pp][Ll][Ii][Cc][Aa][Tt][Ii][Oo][Nn][ \t]*=[ \t]*||')"; \
+		    export REPLOPTS="`echo describe keyspace system_traces | cqlsh --cqlversion=$$CQLSH_VERSION $$remote | grep -i 'with replication' | sed 's|^.*[Rr][Ee][Pp][Ll][Ii][Cc][Aa][Tt][Ii][Oo][Nn][ \t]*=[ \t]*||'`"; \
 		    break; \
 		fi; \
 	    else \
-		if echo "SELECT * FROM system.local" | cqlsh $$remote >/dev/null 2>&1; then \
-		    TARGET=$$remote; \
-		    export REPLOPTS="$(echo describe keyspace system_traces | cqlsh $$remote | grep -i 'with replication' | sed 's|^.*[Rr][Ee][Pp][Ll][Ii][Cc][Aa][Tt][Ii][Oo][Nn][ \t]*=[ \t]*||')"; \
+		if echo "SELECT * FROM system.local;" | cqlsh $$remote >/dev/null 2>&1; then \
+		    export TARGET=$$remote; \
+		    export REPLOPTS="`echo describe keyspace system_traces | cqlsh $$remote | grep -i 'with replication' | sed 's|^.*[Rr][Ee][Pp][Ll][Ii][Cc][Aa][Tt][Ii][Oo][Nn][ \t]*=[ \t]*||'`"; \
 		    break; \
 		fi; \
 	    fi; \
@@ -150,9 +150,9 @@ prep-test-cassandra:
 	    echo "ERROR: failed connecting to Cassandra!" >&2; \
 	    exit 1; \
 	elif test "$$CQLSH_VERSION"; then \
-	    echo "CREATE KEYSPACE IF NOT EXISTS $$CASSANDRA_KEYSPACE WITH REPLICATION = $$REPLOPTS;" | cqlsh --cqlversion="$$CQLSH_VERSION" $$TARGET; \
+	    echo "CREATE KEYSPACE IF NOT EXISTS $$CASSANDRA_KEYSPACE WITH REPLICATION = $$REPLOPTS" | cqlsh --cqlversion="$$CQLSH_VERSION" $$TARGET; \
 	else \
-	    echo "CREATE KEYSPACE IF NOT EXISTS $$CASSANDRA_KEYSPACE WITH REPLICATION = $$REPLOPTS;" | cqlsh $$TARGET; \
+	    echo "CREATE KEYSPACE IF NOT EXISTS $$CASSANDRA_KEYSPACE WITH REPLICATION = $$REPLOPTS" | cqlsh $$TARGET; \
 	fi
 
 prep-test: prep-test-cassandra prep-test-mysql prep-test-postgres prep-test-sqlite

@@ -1,0 +1,22 @@
+machine:
+  environment:
+    MYSQL_HOST: 127.0.0.1
+    MYSQL_DATABASE: circleci
+    MYSQL_PASSWORD: test
+    MYSQL_USER: ubuntu
+    POSTGRES_DATABASE: circle_test
+    POSTGRES_HOST: 127.0.0.1
+    POSTGRES_PASSWORD: test
+    POSTGRES_USER: ubuntu
+    SQLITE_DATABASE: ./default.sqlite
+    TEST_MYSQL: true
+    TEST_POSTGRES: true
+    TEST_SQLITE: true
+  node:
+    version: 6.9.1
+  services:
+    - mysql
+    - postgresql
+test:
+  override:
+    - make test

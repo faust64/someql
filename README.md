@@ -7,10 +7,12 @@
  * Write backend-agnostic code:
 
 ```
-// postgres
-const db = require('someql')({ driver: 'postgres', database: 'tests', username: 'pguser', password: 'pgpass', host: '1.2.3.4', ssl: true });
+// cassandra
+const db = require'someql')({ driver: 'cassandra', database: 'tests', username: 'casuser', password: 'caspass', host: '3.4.5.6' });
 // mysql
 const db = require('someql')({ driver: 'mysql', database: 'tests', username: 'myuser', password: 'mypass', host: '2.3.4.5' });
+// postgres
+const db = require('someql')({ driver: 'postgres', database: 'tests', username: 'pguser', password: 'pgpass', host: '1.2.3.4', ssl: true });
 // defaults to sqlite
 const db = require('someql')({ database: './default.sqlite' });
 

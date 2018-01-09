@@ -1,7 +1,7 @@
 {
   "name": "someql",
   "license": "BSD-3-Clause",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependencies": {
     "bluebird": "^3.5.0",
     "wraplog": "^0.0.2"

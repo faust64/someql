@@ -124,9 +124,38 @@ prep-test-sqlite:
 	fi
 
 prep-test-cassandra:
-	@@echo FIXME
+	@@if test -z "$$TEST_CASSANDRA"; then \
+	    return 0; \
+	fi; \
+	test -z "$$CASSANDRA_HOST" && export CASSANDRA_HOST=127.0.0.1; \
+	test -z "$$CASSANDRA_KEYSPACE" && export CASSANDRA_KEYSPACE=tests; \
+	export REPLOPTS="{'class': 'SimpleStrategy', 'replication_factor': '2'}  AND durable_writes = true;"; \
+	for remote in $$CASSANDRA_HOST; \
+	do \
+	    if test "$$CQLSH_VERSION"; then
+		if echo "SELECT * FROM system.local" | cqlsh --cqlverson=$$CQLSH_VERSION $$remote >/dev/null 2>&1; then \
+		    export TARGET=$$remote; \
+		    export REPLOPTS="$(echo describe keyspace system_traces | cqlsh --cqlversion=$$CQLSH_VERSION $$remote | grep -i 'with replication' | sed 's|^.*[Rr][Ee][Pp][Ll][Ii][Cc][Aa][Tt][Ii][Oo][Nn][ \t]*=[ \t]*||')"; \
+		    break; \
+		fi; \
+	    else \
+		if echo "SELECT * FROM system.local" | cqlsh $$remote >/dev/null 2>&1; then \
+		    TARGET=$$remote; \
+		    export REPLOPTS="$(echo describe keyspace system_traces | cqlsh $$remote | grep -i 'with replication' | sed 's|^.*[Rr][Ee][Pp][Ll][Ii][Cc][Aa][Tt][Ii][Oo][Nn][ \t]*=[ \t]*||')"; \
+		    break; \
+		fi; \
+	    fi; \
+	done; \
+	if test -z "$$TARGET"; then \
+	    echo "ERROR: failed connecting to Cassandra!" >&2; \
+	    exit 1; \
+	elif test "$$CQLSH_VERSION"; then \
+	    echo "CREATE KEYSPACE IF NOT EXISTS $$CASSANDRA_KEYSPACE WITH REPLICATION = $$REPLOPTS;" | cqlsh --cqlversion="$$CQLSH_VERSION" $$TARGET; \
+	else \
+	    echo "CREATE KEYSPACE IF NOT EXISTS $$CASSANDRA_KEYSPACE WITH REPLICATION = $$REPLOPTS;" | cqlsh $$TARGET; \
+	fi
 
-prep-test: prep-test-mysql prep-test-postgres prep-test-sqlite
+prep-test: prep-test-cassandra prep-test-mysql prep-test-postgres prep-test-sqlite
 
 release:
 	@@npm run release

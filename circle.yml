@@ -1,5 +1,6 @@
 machine:
   environment:
+    CQLSH_VERSION: 3.4.0
     DEBUG: wraplog
     MYSQL_HOST: localhost
     MYSQL_DATABASE: circle_test
@@ -10,14 +11,18 @@ machine:
     POSTGRES_PASSWORD: test
     POSTGRES_USER: ubuntu
     SQLITE_DATABASE: ./default.sqlite
+    TEST_CASSANDRA: true
     TEST_MYSQL: true
     TEST_POSTGRES: true
     TEST_SQLITE: true
   node:
     version: 6.9.1
   services:
+    - cassandra
     - mysql
     - postgresql
 test:
   override:
     - make test
+  pre:
+    - sudo pip install --upgrade cqlsh

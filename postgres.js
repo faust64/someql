@@ -1,25 +1,21 @@
 const Promise = require('bluebird');
-const logger = require('logger')('postgres-handler');
+const logger = require('wraplog')('postgres-handler');
 
-module.exports = () => {
+module.exports = (opts) => {
 	try {
 	    const pool = require('pg-pool');
-	    let opts = {
-		    connectionTimeoutMillis: process.env.POSTGRES_CONN_TIMEOUT || 1000,
-		    database: process.env.POSTGRES_DATABASE || 'template42',
-		    host: process.env.POSTGRES_HOST || '127.0.0.1',
-		    idleTimeoutMillis: process.env.POSTGRES_IDLE_TIMEOUT || 1000,
-		    max: process.env.POSTGRES_MAX_CONN || 64,
-		    port: process.env.POSTGRES_PORT || 5432,
-		    user: process.env.POSTGRES_USER || 'postgres'
+	    let popts = {
+		    connectionTimeoutMillis: opts.connTimeout || 1000,
+		    database: opts.database || 'template42',
+		    host: opts.host || '127.0.0.1',
+		    idleTimeoutMillis: opts.idleTimeout || 1000,
+		    max: opts.maxConn || 64,
+		    port: opts.port || 5432,
+		    user: opts.username || 'postgres'
 		};
-	    if (process.env.POSTGRES_PASSWORD !== undefined && process.env.POSTGRES_PASSWORD !== '') {
-		opts.password = process.env.POSTGRES_PASSWORD;
-	    }
-	    if (process.env.POSTGRES_SSL !== undefined && process.env.POSTGRES_SSL !== 'false') {
-		opts.ssl = true;
-	    }
-	    this._db = new pool(opts);
+	    if (opts.password !== undefined) { popts.password = opts.password; }
+	    if (opts.ssl !== undefined) { popts.ssl = opts.ssl; }
+	    this._db = new pool(popts);
 	} catch(e) {
 	    logger.error(e);
 	    process.exit(1);

@@ -1,10 +1,10 @@
 const Promise = require('bluebird');
-const logger = require('logger')('sqlite-handler');
+const logger = require('wraplog')('sqlite-handler');
 
-module.exports = () => {
+module.exports = (opts) => {
 	try {
 	    const sqlite = require('better-sqlite3');
-	    this._db = new sqlite(process.env.SQLITE_DBFILE || './default.sqlite');
+	    this._db = new sqlite(opts.database || './default.sqlite');
 	} catch(e) {
 	    logger.error(e);
 	    process.exit(1);
@@ -26,7 +26,7 @@ module.exports = () => {
 		read: (qry, limit, offset) => {
 		    return new Promise((resolve, reject) => {
 			    try {
-				let mylimit = limit || process.env.PAGINATION_MIN || 100;
+				let mylimit = limit || opts.paginationMin || 100;
 				let myoffset = offset || 0;
 				if (qry.indexOf(' LIMIT ') < 0 && mylimit !== 'none') {
 				    qry += ` LIMIT ${myoffset}, ${mylimit}`;

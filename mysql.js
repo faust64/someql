@@ -1,22 +1,20 @@
 const Promise = require('bluebird');
-const logger = require('logger')('mysql-handler');
+const logger = require('wraplog')('mysql-handler');
 
-module.exports = () => {
+module.exports = (opts) => {
 	try {
-	    let mysql = require('mysql'), opts = {
-		    connectionLimit: process.env.MYSQL_MAX_CONN || 64,
-		    database: process.env.MYSQL_DATABASE || 'default',
-		    host: process.env.MYSQL_HOST || '127.0.0.1',
-		    port: process.env.MYSQL_PORT || 3306,
-		    user: process.env.MYSQL_USER || 'root'
+	    let mysql = require('mysql'), myopts = {
+		    connectionLimit: opts.maxConn || 64,
+		    database: opts.database || 'default',
+		    host: opts.host || '127.0.0.1',
+		    port: opts.port || 3306,
+		    user: opts.username || 'root'
 		};
-	    if (process.env.MYSQL_PASSWORD !== undefined && process.env.MYSQL_PASSWORD !== '') {
-		opts.password = process.env.MYSQL_PASSWORD;
-	    }
+	    if (opts.password !== undefined) { myopts.password = opts.password; }
 	    Promise.promisifyAll(mysql);
 	    Promise.promisifyAll(require("mysql/lib/Connection").prototype);
 	    Promise.promisifyAll(require("mysql/lib/Pool").prototype);
-	    this._db = mysql.createPool(opts);
+	    this._db = mysql.createPool(myopts);
 	    this._db.on('connection', connection => connection.query('SET SESSION auto_increment_increment=1'));
 	    this._db.on('enqueue', () => logger.info('waiting for mysql socket'));
 	} catch(e) {
@@ -39,7 +37,7 @@ module.exports = () => {
 		    },
 		read: (qry, limit, offset) => {
 			return Promise.using(getSocket(), socket => {
-				    let mylimit = limit || process.env.PAGINATION_MIN || 100;
+				    let mylimit = limit || opts.paginationMin || 100;
 				    let myoffset = offset || 0;
 				    if (qry.indexOf(' LIMIT ') < 0 && mylimit !== 'none') {
 					qry += ` LIMIT ${myoffset}, ${mylimit}`;

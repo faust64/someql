@@ -1,16 +1,8 @@
 const Promise = require('bluebird');
-const logger = require('logger')('cassandra-handler');
-const readPolicy = process.env.CASSANDRA_READ_CONSISTENCY || 'one';
-const writePolicy = process.env.CASSANDRA_WRITE_CONSISTENCY || 'one';
+const logger = require('wraplog')('cassandra-handler');
 
-
-module.exports = (cassandraOptions) => {
-	if (cassandraOptions === undefined) {
-	    cassandraOptions = {
-		    contactPoints: (process.env.CASSANDRA_HOST ? process.env.CASSANDRA_HOST.split(' ') : ['127.0.0.1']),
-		    keyspace: process.env.CASSANDRA_KEYSPACE || 'opencointracking'
-		};
-	}
+module.exports = (opts) => {
+	let copts = opts || { contactPoints: [ '127.0.0.1' ], keyspace: 'sessions' };
 	try {
 	    const drv = require('cassandra-driver');
 	    const resolveConsistency = (str) => {
@@ -27,30 +19,25 @@ module.exports = (cassandraOptions) => {
 		    else if (str === 'localOne' || str === 'LOCAL_ONE') { return drv.types.consistencies.localOne; }
 		    else { return drv.types.consistencies.one; }
 		};
-	    if (process.env.CASSANDRA_AUTH_USER && process.env.CASSANDRA_AUTH_PASS) {
-		cassandraOptions.authProvider = new drv.auth.PlainTextAuthProvider(process.env.CASSANDRA_AUTH_USER, process.env.CASSANDRA_AUTH_PASS);
+	    const fmtConsistency = (str) => {
+		    const policy = resolveConsistency(str);
+		    return { consistency: policy };
+		};
+	    if (opts.username !== undefined && opts.password !== undefined) {
+		copts = new drv.auth.PlainTextAuthProvider(opts.username, opts.password);
 	    }
-	    this._db = new drv.Client(cassandraOptions);
+	    this._db = new drv.Client(copts);
 	} catch(e) {
 	    logger.error(e);
 	    process.exit(1);
 	}
-
-	const readConsistency = (str) => {
-		const policy = resolveConsistency(readPolicy);
-		return { consistency: policy };
-	    };
-	const writeConsistency = (str) => {
-		const policy = resolveConsistency(writePolicy);
-		return { consistency: policy };
-	    };
 	let self = this;
 
 	return {
 		write: (qry) => {
 		    return new Promise((resolve, reject) => {
 			    logger.debug(qry);
-			    self._db.execute(qry, [], writeConsistency(writePolicy))
+			    self._db.execute(qry, [], fmtConsistency(opts.writeConsistency))
 				.then((resp) => { resolve(true); })
 				.catch((e) => {
 					logger.error(e);
@@ -60,12 +47,12 @@ module.exports = (cassandraOptions) => {
 		    },
 	       read: (qry, limit, offset) => {
 			return new Promise((resolve, reject) => {
-				let mylimit = limit || process.env.PAGINATION_MIN || 100;
+				let mylimit = limit || opts.paginationMin || 100;
 				if (qry.indexOf(' LIMIT ') < 0 && mylimit !== 'none') {
 				    qry += " LIMIT " + mylimit;
 				}
 				logger.debug(qry);
-				self._db.execute(qry, [], readConsistency(readPolicy))
+				self._db.execute(qry, [], fmtConsistency(opts.readConsistency))
 				    .then((resp) => {
 					    if (resp.rows !== undefined && resp.rows.length >= 0) {
 						resolve(resp.rows);

@@ -4,11 +4,12 @@
   "version": "0.0.1",
   "dependencies": {
     "bluebird": "^3.5.0",
-    "wraplog": "^0.0.1"
+    "wraplog": "^0.0.2"
   },
   "devDependencies": {
     "better-sqlite3": "^4.0.3",
     "cassandra-driver": "^3.2.2",
+    "mocha": "4.1.0",
     "mysql": "^2.15.0",
     "pg": "^7.4.0"
    },

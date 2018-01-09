@@ -1,6 +1,6 @@
 MYSQL_ADMPASS :=
 MYSQL_ADMUSER := root
-MYSQL_DATABASE := circleci
+MYSQL_DATABASE := circle_test
 MYSQL_HOST := localhost
 MYSQL_PASSWORD := test
 MYSQL_USER := ubuntu

@@ -2,7 +2,7 @@ machine:
   environment:
     DEBUG: wraplog
     MYSQL_HOST: localhost
-    MYSQL_DATABASE: circleci
+    MYSQL_DATABASE: circle_test
     MYSQL_PASSWORD: test
     MYSQL_USER: ubuntu
     POSTGRES_DATABASE: circle_test

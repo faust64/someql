@@ -1,2 +1,3 @@
-npm-debug.log
+circle.yml
 env.sample
+npm-debug.log

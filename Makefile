@@ -107,11 +107,6 @@ prep-test-postgres:
 		    sudo -su "$(POSTGRES_ADMUSER)" -- psql -c "DROP TABLE $$_table CASCADE;" -d "$(POSTGRES_DATABASE)" >/dev/null; \
 		done; \
 	    echo "NOTICE: done dropping local tables from postgres:$(POSTGRES_DATABASE)"; \
-	    cat db/init.psql db/update.*.psql 2>/dev/null | awk '/^[cC][rR][eE][aA][tT][eE][ \t][sS][eE][qQ]|eE][nN][cC][eE][ \t]/{print $$3}' | while read _seq; \
-		do \
-		    sudo -su "$(POSTGRES_ADMUSER)" -- psql -c "DROP SEQUENCE $$_seq;" -d "$(POSTGRES_DATABASE)" >/dev/null || continue; \
-		done; \
-	    echo "NOTICE: done dropping local sequences from postgres:$(POSTGRES_DATABASE)"; \
 	fi
 
 prep-test-sqlite:

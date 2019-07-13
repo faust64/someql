@@ -1,7 +1,8 @@
 const Promise = require('bluebird');
 const logger = require('wraplog')('cassandra-handler');
 
-module.exports = (opts) => {
+class Cassandra {
+    constructor(opts) {
 	let copts = opts || { contactPoints: [ '127.0.0.1' ], keyspace: 'sessions' };
 	try {
 	    this._drv = require('cassandra-driver');
@@ -9,6 +10,7 @@ module.exports = (opts) => {
 		copts = new this._drv.auth.PlainTextAuthProvider(opts.username, opts.password);
 	    }
 	    this._db = new this._drv.Client(copts);
+	    this._opts = opts;
 	} catch(e) {
 	    logger.error(e);
 	    process.exit(1);
@@ -32,27 +34,31 @@ module.exports = (opts) => {
 		const policy = self._resolveConsistency(str);
 		return { consistency: policy };
 	    };
+    }
 
+    get handlers() {
 	return {
 		write: (qry) => {
-		    return new Promise((resolve, reject) => {
-			    logger.debug(qry);
-			    self._db.execute(qry, [], self._fmtConsistency(opts.writeConsistency))
-				.then((resp) => { resolve(true); })
-				.catch((e) => {
-					logger.error(e);
-					reject('failed writing to database');
-				    });
-			});
+			let self = this;
+			return new Promise((resolve, reject) => {
+				logger.debug(qry);
+				self._db.execute(qry, [], self._fmtConsistency(self._opts.writeConsistency))
+				    .then((resp) => { resolve(true); })
+				    .catch((e) => {
+					    logger.error(e);
+					    reject('failed writing to database');
+					});
+			    });
 		    },
 	       read: (qry, limit, offset) => {
+			let self = this;
 			return new Promise((resolve, reject) => {
-				let mylimit = limit || opts.paginationMin || 100;
+				let mylimit = limit || self._opts.paginationMin || 100;
 				if (qry.indexOf(' LIMIT ') < 0 && mylimit !== 'none') {
 				    qry += " LIMIT " + mylimit;
 				}
 				logger.debug(qry);
-				self._db.execute(qry, [], self._fmtConsistency(opts.readConsistency))
+				self._db.execute(qry, [], self._fmtConsistency(self._opts.readConsistency))
 				    .then((resp) => {
 					    if (resp.rows !== undefined && resp.rows.length >= 0) {
 						resolve(resp.rows);
@@ -69,8 +75,12 @@ module.exports = (opts) => {
 			});
 		    },
 		close: () => {
+			let self = this;
 			self._db.closeAsync();
 			self._db = undefined;
 		    }
 	    };
-    };
+    }
+}
+
+module.exports = (opts) => new Cassandra(opts).handlers;

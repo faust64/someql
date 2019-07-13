@@ -12,11 +12,11 @@
     "mocha": "4.1.0",
     "mysql": "^2.15.0",
     "pg": "^7.4.0"
-   },
-   "description": "SQL-lookalike abstraction library",
-   "engines": {
-     "node": "6.9.1"
-   },
+  },
+  "description": "SQL-lookalike abstraction library",
+  "engines": {
+    "node": "6.9.1"
+  },
   "repository": "https://github.com/faust64/someql",
   "scripts": {
     "release": "(npm whoami | grep '^Not authed' >/dev/null && npm login) ; npm whoami | grep '^Not authed' >/dev/null && echo 'login to npm required' >&2 && exit 1 ; git push -u origin master && npm publish",

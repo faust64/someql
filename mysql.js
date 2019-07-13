@@ -1,12 +1,14 @@
 const Promise = require('bluebird');
 const logger = require('wraplog')('mysql-handler');
 
-module.exports = (opts) => {
+class MySQL {
+    constructor(opts) {
 	try {
 	    let mysql = require('mysql'), myopts = {
 		    connectionLimit: opts.maxConn || 64,
 		    database: opts.database || 'default',
 		    host: opts.host || '127.0.0.1',
+		    insecureAuth: process.env.MYSQL_INSECURE_AUTH !== undefined,
 		    port: opts.port || 3306,
 		    user: opts.username || 'root'
 		};
@@ -17,16 +19,20 @@ module.exports = (opts) => {
 	    this._db = mysql.createPool(myopts);
 	    this._db.on('connection', connection => connection.query('SET SESSION auto_increment_increment=1'));
 	    this._db.on('enqueue', () => logger.info('waiting for mysql socket'));
+	    this._opts = opts;
+	    let self = this;
+	    this._getSocket = () => { return self._db.getConnectionAsync().disposer(connection => connection.release()) };
 	} catch(e) {
 	    logger.error(e);
 	    process.exit(1);
 	}
-	let self = this;
-	const getSocket = () => { return self._db.getConnectionAsync().disposer(connection => connection.release()) };
+    }
 
+    get handlers() {
 	return {
 		write: (qry) => {
-			return Promise.using(getSocket(), socket => {
+			let self = this;
+			return Promise.using(self._getSocket(), socket => {
 				    logger.debug(qry);
 				    return socket.queryAsync(qry)
 				})
@@ -36,8 +42,9 @@ module.exports = (opts) => {
 				});
 		    },
 		read: (qry, limit, offset) => {
-			return Promise.using(getSocket(), socket => {
-				    let mylimit = limit || opts.paginationMin || 100;
+			let self = this;
+			return Promise.using(self._getSocket(), socket => {
+				    let mylimit = limit || self._opts.paginationMin || 100;
 				    let myoffset = offset || 0;
 				    if (qry.indexOf(' LIMIT ') < 0 && mylimit !== 'none') {
 					qry += ` LIMIT ${myoffset}, ${mylimit}`;
@@ -60,8 +67,12 @@ module.exports = (opts) => {
 				});
 		    },
 		close: () => {
+			let self = this;
 			self._db.endAsync();
 			self._db = undefined;
 		    }
 	    };
-    };
+    }
+}
+
+module.exports = (opts) => new MySQL(opts).handlers;

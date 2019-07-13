@@ -6,11 +6,12 @@ class Postgres {
 	try {
 	    const pool = require('pg-pool');
 	    let popts = {
-		    connectionTimeoutMillis: opts.connTimeout || 1000,
+		    connectionTimeoutMillis: opts.connTimeout || 8000,
 		    database: opts.database || 'template42',
 		    host: opts.host || '127.0.0.1',
-		    idleTimeoutMillis: opts.idleTimeout || 1000,
-		    max: opts.maxConn || 64,
+		    idleTimeoutMillis: opts.idleTimeout || 12000,
+		    max: opts.maxConn || 256,
+		    min: 32,
 		    port: opts.port || 5432,
 		    user: opts.username || 'postgres'
 		};
@@ -29,13 +30,17 @@ class Postgres {
 		write: (qry) => {
 			let self = this;
 			return new Promise((resolve, reject) => {
+				let cleanup = false;
 				self._db.connect()
 				    .then((socket) => {
+					    cleanup = socket;
 					    logger.debug(qry);
 					    return socket.query(qry);
 					})
+				    .then(() => cleanup.release())
 				    .then(() => resolve(true))
 				    .catch((e) => {
+					    if (cleanup !== false) { cleanup.release(); }
 					    logger.error(e);
 					    reject({ code: 500, msg: 'failed writing to database' });
 					});
@@ -44,6 +49,7 @@ class Postgres {
 		read: (qry, limit, offset) => {
 			let self = this;
 			return new Promise((resolve, reject) => {
+				let cleanup = false;
 				self._db.connect()
 				    .then((socket) => {
 					    let mylimit = limit || self._opts.paginationMin || 100;
@@ -51,10 +57,12 @@ class Postgres {
 					    if (qry.indexOf(' LIMIT ') < 0 && mylimit !== 'none') {
 						qry += ` LIMIT ${mylimit} OFFSET ${myoffset}`;
 					    }
-					    logger.debug(qry);
+					    cleanup = socket;
+					    logger.info(qry);
 					    return socket.query(qry);
 					})
 				    .then((resp) => {
+					    cleanup.release();
 					    if (resp.rows !== undefined && resp.rows.length >= 0) {
 						resolve(resp.rows);
 					    } else {
@@ -64,6 +72,7 @@ class Postgres {
 					    }
 					})
 				    .catch((e) => {
+					    if (cleanup !== false) { cleanup.release(); }
 					    logger.error(e);
 					    reject({ code: 500, msg: 'failed querying database' });
 					});

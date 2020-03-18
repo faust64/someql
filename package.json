@@ -7,9 +7,9 @@
     "wraplog": "^0.0.5"
   },
   "devDependencies": {
-    "better-sqlite3": "^5.4.0",
+    "better-sqlite3": "6.0.1",
     "cassandra-driver": "^4.1.0",
-    "mocha": "6.1.4",
+    "mocha": "7.1.1",
     "mysql": "^2.17.1",
     "pg": "^7.11.0"
   },

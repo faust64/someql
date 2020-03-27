@@ -3,19 +3,19 @@
   "license": "BSD-3-Clause",
   "version": "0.0.5",
   "dependencies": {
-    "bluebird": "^3.5.0",
-    "wraplog": "^0.0.5"
+    "bluebird": "^3.7.2",
+    "wraplog": "^0.0.9"
   },
   "devDependencies": {
-    "better-sqlite3": "^5.4.0",
-    "cassandra-driver": "^4.1.0",
-    "mocha": "6.1.4",
-    "mysql": "^2.17.1",
-    "pg": "^7.11.0"
+    "better-sqlite3": "^6.0.1",
+    "cassandra-driver": "^4.5.0",
+    "mocha": "^7.1.1",
+    "mysql": "^2.18.1",
+    "pg": "^7.18.2"
   },
   "description": "SQL-lookalike abstraction library",
   "engines": {
-    "node": "6.9.1"
+    "node": "10.17.0"
   },
   "repository": "https://github.com/faust64/someql",
   "scripts": {

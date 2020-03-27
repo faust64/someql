@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "dependencies": {
     "bluebird": "^3.7.2",
-    "wraplog": "^0.0.9"
+    "wraplog": "^0.1.0"
   },
   "devDependencies": {
     "better-sqlite3": "^6.0.1",

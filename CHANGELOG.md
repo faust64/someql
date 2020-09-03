@@ -1,3 +1,15 @@
+## v0.1.2 - 202009030952
+
+ - fixing some vulnerable dependency
+
+## v0.1.1 - 202003271218
+
+ - fixing some dependency issue
+
+## v0.1.0 - 202003271212
+
+ - drops NodeJS 6 & NodeJS 8 support
+
 ## v0.0.5 - 201907131642
 
  - refactor allowing for multiple clients being used concurrently

@@ -9,10 +9,10 @@
   "devDependencies": {
     "better-sqlite3": "^6.0.1",
     "cassandra-driver": "^4.5.0",
-    "mocha": "^7.1.1",
+    "mocha": "9.1.2",
     "mysql": "^2.18.1",
     "pg": "^7.18.2",
-    "tar": ">=4.4.15"
+    "tar": "6.1.11"
   },
   "description": "SQL-lookalike abstraction library",
   "engines": {

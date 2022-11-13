@@ -9,7 +9,7 @@
   "devDependencies": {
     "better-sqlite3": "^7.5.0",
     "cassandra-driver": "^4.6.3",
-    "mocha": "^9.2.0",
+    "mocha": "^10.1.0",
     "mysql": "^2.18.1",
     "pg": "^8.7.1",
     "tar": ">=6.1.1"

@@ -1,4 +1,3 @@
-const Promise = require('bluebird');
 const logger = require('wraplog')('postgres-handler');
 
 class Postgres {

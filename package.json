@@ -1,16 +1,15 @@
 {
   "name": "someql",
   "license": "BSD-3-Clause",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "dependencies": {
-    "bluebird": "^3.7.2",
     "wraplog": "^0.1.2"
   },
   "devDependencies": {
     "better-sqlite3": "^7.5.0",
     "cassandra-driver": "^4.6.3",
     "mocha": "^10.1.0",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "pg": "^8.7.1",
     "tar": ">=6.1.1"
   },
